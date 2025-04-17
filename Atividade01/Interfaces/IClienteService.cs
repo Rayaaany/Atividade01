@@ -1,11 +1,13 @@
-﻿namespace Atividade01.Interfaces
+﻿using Atividade01.Models; 
+namespace Atividade01.Interfaces
 {
     public interface IClienteService
     {
-        void AdicionarCliente(string nome, string email);  // Adiciona um novo cliente
+        void AdicionarCliente(string Nome, string Email);// Adiciona um novo cliente
+
         List<Cliente> ListarClientes();  // Lista todos os clientes
-        Cliente BuscarCliente(int id);  // Busca um cliente por ID
         void AtualizarCliente(Cliente cliente);  // Atualiza um cliente
-        void RemoverCliente(int id);  // Remove um cliente
+        void RemoverCliente(int Id);  
+            Cliente // Remove um cliente
     }
 }

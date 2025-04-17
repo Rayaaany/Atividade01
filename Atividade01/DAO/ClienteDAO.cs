@@ -1,50 +1,51 @@
 ﻿using Atividade01.Interfaces;
 using Atividade01.Models;
 using Microsoft.Data.SqlClient;
+using System.Reflection.PortableExecutable;
+using System.Security.Cryptography;
 
 namespace Atividade01.DAO
 {
-    internal class ClienteDAO : IClienteDAO
+    public class ClienteDAO : IClienteDAO
     {
         private string _connectionString;
 
         public ClienteDAO(string connectionString)
         {
             _connectionString = connectionString;
-
         }
 
-        public void Atualizar(Cliente Cliente)
+        public void Atualizar(Cliente pCliente)
         {
-           using(SqlConnection con = new SqlConnection (_connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                string query = "UPDATE Clientes SET Nome = @Nome, Email = @EMAIL WHERE id = @id";
+                string query = "UPDATE Clientes SET Nome = @Nome, Email = @Email WHERE Id = @Id";
 
                 SqlCommand cmd = new SqlCommand(query, con);
-                cmd.Parameters.AddWithValue("@Nome", Cliente.Nome);
-                cmd.Parameters.AddWithValue("@Email", Cliente.Email);
-                cmd.Parameters.AddWithValue("@Id", Cliente.Id);
+                cmd.Parameters.AddWithValue("@Nome", pCliente.Nome);
+                cmd.Parameters.AddWithValue("@Email", pCliente.Email);
+                cmd.Parameters.AddWithValue("@Id", pCliente.Id);
 
                 con.Open();
                 cmd.ExecuteNonQuery();
             }
         }
-        public Cliente BuscarPorId(int Id)
+
+        public Cliente BuscarPorId(int pId)
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM Cliente WHERE Id = @Id";
-                SqlCommand cmd = new SqlCommand (query, con);
-                cmd.Parameters.AddWithValue ("@Id", Id);
+                string query = "SELECT * FROM Clientes WHERE Id = @Id";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Id", pId);
 
                 con.Open();
-
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read())
                 {
-                    return new Cliente() 
-                    { 
+                    return new Cliente()
+                    {
                         Id = reader.GetInt32(0),
                         Nome = reader.GetString(1),
                         Email = reader.GetString(2),
@@ -56,56 +57,69 @@ namespace Atividade01.DAO
                 }
             }
         }
-        public void Deletar(int Id)
+
+        public void Deletar(int pId)
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "DELETE FROM Clientes WHERE Id = @Id";
-                SqlCommand cmd = new SqlCommand(query, con);
-                cmd.Parameters.AddWithValue("@Id", Id);
+
+                SqlCommand command = new SqlCommand(query, con);
+                command.Parameters.AddWithValue("@Id", pId);
 
                 con.Open();
-                cmd.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             }
         }
-        public void incluir(string Nome, string Email)
+
+        public void Incluir(string pNome, string pEmail)
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "INSERT INTO Clientes (Nome, Email) VALUES (@Nome, @Email)";
-                SqlCommand cmd = new SqlCommand(query, con);
-                cmd.Parameters.AddWithValue("@Nome", Nome);
-                cmd.Parameters.AddWithValue("@Email", Email);
+
+                SqlCommand command = new SqlCommand(query, con);
+                command.Parameters.AddWithValue("@Nome", pNome);
+                command.Parameters.AddWithValue("@Email", pEmail);
 
                 con.Open();
-                cmd.ExecuteNonQuery();
+                command.ExecuteNonQuery();
             }
+        }
+
+        public void incluir(string Nome, string Email)
+        {
+            throw new NotImplementedException();
         }
 
         public List<Cliente> ListarTodos()
         {
-            List<Cliente> lista = new List<Cliente>();
+            List<Cliente> retorno = new List<Cliente>();
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Clientes";
-                SqlCommand cmd = new SqlCommand(query, con);
+
+                SqlCommand command = new SqlCommand(query, con);
 
                 con.Open();
 
-                SqlDataReader reader = cmd.ExecuteReader();
+                SqlDataReader reader = command.ExecuteReader();
+
                 while (reader.Read())
                 {
-                    lista.Add(new Cliente()
+                    Cliente cliente = new Cliente()
                     {
-                        Id = reader.GetInt32(0),
-                        Nome = reader.GetString(1),
-                        Email = reader.GetString(2)
-                    });
+                        Id = (int)reader["Id"],
+                        Nome = reader["Nome"].ToString(),
+                        Email = reader["Email"].ToString()
+                    };
+
+                    retorno.Add(cliente);
                 }
             }
 
-            return lista;
+            return retorno;
         }
     }
 }

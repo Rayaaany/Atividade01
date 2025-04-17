@@ -1,6 +1,7 @@
-﻿using Atividade01.Interfaces;
+﻿using Atividade01.DAO;
+using Atividade01.Interfaces;
 using Atividade01.Models;
-using Atividade01.DAO;
+using System.Reflection.PortableExecutable;
 
 namespace Atividade01.Services
 {
@@ -13,9 +14,32 @@ namespace Atividade01.Services
             _clienteDAO = new ClienteDAO(connectionString);
         }
 
-        public void AdicionarCliente(string Nome, string Email)
+        public void AdicionarCliente(string pNome, string pEmail)
         {
-            _clienteDAO.incluir(Nome, Email);
+            if (string.IsNullOrWhiteSpace(pNome) || string.IsNullOrWhiteSpace(pEmail))
+                throw new Exception("Nome e o Email são obrigatórios.");
+
+            _clienteDAO.Incluir(pNome, pEmail);
+        }
+
+        // || - OU - Se isso ou aquilo { faça isso }
+        // && - E - Se isso e Aquilo { faça isso }
+        // NOT - Não - ! - 
+
+        public void AtualizarCliente(Cliente pCliente)
+        {
+            if (pCliente == null)
+                throw new Exception("Cliente Inválido");
+
+            if (string.IsNullOrWhiteSpace(pCliente.Nome) || string.IsNullOrWhiteSpace(pCliente.Email))
+                throw new Exception("Nome e o Email são obrigatórios.");
+
+            _clienteDAO.Atualizar(pCliente);
+        }
+
+        public Cliente BuscarCliente(int pId)
+        {
+            return _clienteDAO.BuscarPorId(pId);
         }
 
         public List<Cliente> ListarClientes()
@@ -23,20 +47,14 @@ namespace Atividade01.Services
             return _clienteDAO.ListarTodos();
         }
 
-        public Cliente BuscarCliente(int Id)
+        public void RemoverCliente(int pId)
         {
-            return _clienteDAO.BuscarPorId(Id);
-        }
+            Cliente cliente = _clienteDAO.BuscarPorId(pId);
 
-        public void AtualizarCliente(Cliente cliente)
-        {
-            _clienteDAO.Atualizar(cliente);
-        }
+            if (cliente == null)
+                throw new Exception("O Cliente não foi encontrado");
 
-        public void RemoverCliente(int Id)
-        {
-            _clienteDAO.Deletar(Id);
+            _clienteDAO.Deletar(pId);
         }
     }
 }
-
