@@ -58,17 +58,54 @@ namespace Atividade01.DAO
         }
         public void Deletar(int Id)
         {
-            throw new NotImplementedException();
-        }
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                string query = "DELETE FROM Clientes WHERE Id = @Id";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Id", Id);
 
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
         public void incluir(string Nome, string Email)
         {
-            throw new NotImplementedException();
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                string query = "INSERT INTO Clientes (Nome, Email) VALUES (@Nome, @Email)";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@Nome", Nome);
+                cmd.Parameters.AddWithValue("@Email", Email);
+
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
         }
 
         public List<Cliente> ListarTodos()
         {
-            throw new NotImplementedException();
+            List<Cliente> lista = new List<Cliente>();
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM Clientes";
+                SqlCommand cmd = new SqlCommand(query, con);
+
+                con.Open();
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    lista.Add(new Cliente()
+                    {
+                        Id = reader.GetInt32(0),
+                        Nome = reader.GetString(1),
+                        Email = reader.GetString(2)
+                    });
+                }
+            }
+
+            return lista;
         }
     }
 }
