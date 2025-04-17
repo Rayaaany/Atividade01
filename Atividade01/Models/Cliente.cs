@@ -1,6 +1,6 @@
 ﻿namespace Atividade01.Models
 {
-    internal class Cliente
+    public class Cliente
     {
         public int Id { get; set; }
         public string Nome { get; set; } = string.Empty;
